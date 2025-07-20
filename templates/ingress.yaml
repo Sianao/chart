@@ -1,0 +1,17 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "myapp.fullname" . }}
+spec:
+  entryPoints:
+  {{- range .Values.ingress.entryPoints }}
+    - {{ . }}
+  {{- end }}
+  routes:
+    - match: Host(`{{ .Values.ingress.host }}`) && PathPrefix(`{{ .Values.ingress.path }}`)
+      kind: Rule
+      services:
+        - name: {{ include "myapp.fullname" . }}
+          port: {{ .Values.service.port }}
+{{- end }}

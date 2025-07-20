@@ -1,0 +1,29 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+
+containerPort: 80
+
+service:
+  type: ClusterIP
+  port: 3000 
+
+ingress:
+  enabled: false
+  host: example.local
+  path: /
+  entryPoints:
+    - web
+
+pvc:
+  enabled: false
+  storageClassName: ""
+  accessModes: ["ReadWriteOnce"]
+  size: 1Gi
+  mountPath: /data
+
+workloadType: deployment
+
+

@@ -1,0 +1,4 @@
+apiVersion: v2
+name: kubenetes-self-helm
+description: A generic Helm chart for K3s with optional ingress, pvc, and flexible workloads
+version: 0.1.0

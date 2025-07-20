@@ -1,0 +1,46 @@
+{{- if eq .Values.workloadType "statefulset" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "myapp.fullname" . }}
+spec:
+  serviceName: {{ include "myapp.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "myapp.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "myapp.name" . }}
+    spec:
+      containers:
+        - name: {{ include "myapp.name" . }}
+          image: "{{ .Values.image.repository }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          {{- if .Values.pvc.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.pvc.mountPath }}
+          {{- end }}
+  {{- if .Values.pvc.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: {{ .Values.pvc.accessModes | toYaml | nindent 8 }}
+        resources:
+          requests:
+            storage: {{ .Values.pvc.size }}
+        {{- if .Values.pvc.storageClassName }}
+        storageClassName: {{ .Values.pvc.storageClassName }}
+        {{- end }}
+  {{- end }}
+{{- end }}
